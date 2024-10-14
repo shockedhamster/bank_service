@@ -9,10 +9,3 @@ type Operation struct {
 	OperationType string    `json:"operation_type" db:"operation_type"`
 	Created       time.Time `json:"created" db:"created"`
 }
-
-const (
-	OperationTypeDeposit      = "deposit"
-	OperationTypeWithdraw     = "withdraw"
-	OperationTypeTransferFrom = "transfer_from"
-	OperationTypeTransferTo   = "transfer_to"
-)
