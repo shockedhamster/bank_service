@@ -25,13 +25,13 @@ type Authorization interface {
 	ParseToken(token string) (int, error)
 }
 
-// TODO: Deposit, Withdraw, Transfer
 type Account interface {
 	Deposit(id, amount int) error
 	Withdraw(id, amount int) error
+	Transfer(idFrom, idTo, amount int) error
 }
 
-// TODO: GetUserBalanceById, GetTransactionHistoryById
 type Operations interface {
 	GetUserBalanceById(id int) (int, error)
+	GetTransactionHistoryById(id int, sortType string, limit, offset int) ([]entities.Operation, error)
 }

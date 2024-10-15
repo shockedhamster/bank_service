@@ -18,15 +18,30 @@ func NewAuthPostgres(db *sqlx.DB) *AuthPostgres {
 
 func (r *AuthPostgres) CreateUser(user entities.User) (int, error) {
 	var id int
-
-	query := fmt.Sprintf("INSERT INTO %s (username, password_hash) values ($1, $2) RETURNING id", usersTable)
-
-	row := r.db.QueryRow(query, user.Username, user.Password)
-
-	if err := row.Scan(&id); err != nil {
-		logrus.Errorf("Error creating a user: %s", err.Error())
+	tx, err := r.db.Begin()
+	if err != nil {
+		logrus.Errorf("Error starting tx in transfer: %s", err.Error())
 		return 0, err
 	}
+	createUserQuery := fmt.Sprintf("INSERT INTO %s (username, password_hash) values ($1, $2) RETURNING id", usersTable)
+
+	createUserRow := r.db.QueryRow(createUserQuery, user.Username, user.Password)
+
+	if err := createUserRow.Scan(&id); err != nil {
+		logrus.Errorf("Error creating a user: %s", err.Error())
+		tx.Rollback()
+		return 0, err
+	}
+
+	createAccountQuery := fmt.Sprintf("INSERT INTO %s (id, balance) values ($1, 0)", accoutsTable)
+	_, err = r.db.Exec(createAccountQuery, id)
+	if err != nil {
+		logrus.Errorf("Error creating an account: %s", err.Error())
+		tx.Rollback()
+		return 0, err
+
+	}
+	tx.Commit()
 	return id, nil
 }
 

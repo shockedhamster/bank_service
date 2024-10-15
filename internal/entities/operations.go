@@ -9,3 +9,10 @@ type Operation struct {
 	OperationType string    `json:"operation_type" db:"operation_type"`
 	Created       time.Time `json:"created" db:"created"`
 }
+
+type GetTransactionHistoryInput struct {
+	Id       int    `json:"id" db:"id"`
+	SortType string `json:"sort_type" db:"sort_type"`
+	Limit    int    `json:"limit"`
+	Offset   int    `json:"offset"`
+}

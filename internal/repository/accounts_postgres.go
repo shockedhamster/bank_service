@@ -67,6 +67,44 @@ func (r *AccountsPotgres) Withdraw(id, amount int) error {
 	return nil
 }
 
-// func (r *AccountsPotgres) Transfer() {
+func (r *AccountsPotgres) Transfer(idFrom, idTo, amount int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		logrus.Errorf("Error starting tx in transfer: %s", err.Error())
+		return err
+	}
 
-// }
+	decreaseBalanceQuery := fmt.Sprintf("UPDATE %s SET balance = balance - %d WHERE id = %d", accoutsTable, amount, idFrom)
+	_, err = tx.Exec(decreaseBalanceQuery)
+	if err != nil {
+		tx.Rollback()
+		return err
+
+	}
+	increaseBalanceQuery := fmt.Sprintf("UPDATE %s SET balance = balance + %d WHERE id = %d", accoutsTable, amount, idTo)
+	_, err = tx.Exec(increaseBalanceQuery)
+	if err != nil {
+		tx.Rollback()
+		return err
+
+	}
+
+	insertIntoOperationsFromQuery := fmt.Sprintf("INSERT INTO %s (account_id, amount, operation_type) VALUES ($1, $2, (SELECT id FROM operation_type WHERE type_name='transfer_from'))", operationsTable)
+	_, err = tx.Exec(insertIntoOperationsFromQuery, idFrom, amount)
+	if err != nil {
+		tx.Rollback()
+		return err
+
+	}
+
+	insertIntoOperationsToQuery := fmt.Sprintf("INSERT INTO %s (account_id, amount, operation_type) VALUES ($1, $2, (SELECT id FROM operation_type WHERE type_name='transfer_to'))", operationsTable)
+	_, err = tx.Exec(insertIntoOperationsToQuery, idTo, amount)
+	if err != nil {
+		tx.Rollback()
+		return err
+
+	}
+
+	tx.Commit()
+	return nil
+}

@@ -33,6 +33,11 @@ func (s *AccoutsService) Withdraw(id, amount int) error {
 	return nil
 }
 
-// func (s *AccoutsService) Transfer() {
-
-// }
+func (s *AccoutsService) Transfer(idFrom, idTo, amount int) error {
+	err := s.repo.Transfer(idFrom, idTo, amount)
+	if err != nil {
+		logrus.Errorf("Error making transfer: %s", err.Error())
+		return err
+	}
+	return nil
+}
