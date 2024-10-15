@@ -8,4 +8,8 @@ POST   /account/deposit
 
 POST   /account/withdraw
 
+POST   /account/transfer
+
 GET    /operations/GetUserBalanceById/:id
+
+GET    /operations/transaction-history
