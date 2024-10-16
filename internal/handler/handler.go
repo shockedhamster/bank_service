@@ -26,7 +26,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	operations := router.Group("/operations")
 	{
-		operations.GET("/user-balance/:id", h.getUserBalanceById)
+		operations.GET("/user-balance/:id/:currency", h.getUserBalanceById)
 		operations.GET("/transaction-history", h.getTransactionHistoryById)
 	}
 
