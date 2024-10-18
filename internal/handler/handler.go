@@ -24,13 +24,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-in", h.signIn)
 	}
 
-	operations := router.Group("/operations")
+	operations := router.Group("/operations", h.userIdentity)
 	{
-		operations.GET("/user-balance/:id/:currency", h.getUserBalanceById)
+		operations.GET("/user-balance/:currency", h.getUserBalanceById)
 		operations.GET("/transaction-history", h.getTransactionHistoryById)
 	}
 
-	account := router.Group("/account")
+	account := router.Group("/account", h.userIdentity)
 	{
 		account.POST("/deposit", h.deposit)
 		account.POST("/withdraw", h.withdraw)

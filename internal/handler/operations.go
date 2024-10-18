@@ -3,11 +3,9 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/bank_service/internal/entities"
 	"github.com/gin-gonic/gin"
@@ -21,14 +19,14 @@ const (
 )
 
 func (h *Handler) getUserBalanceById(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	//id, err := strconv.Atoi(c.Param("id"))
+	userId, err := getUserId(c)
 	if err != nil {
-		newErrorResponce(c, http.StatusBadRequest, "invalid id param")
-		fmt.Println(id)
+		newErrorResponce(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	balance, err := h.services.Operations.GetUserBalanceById(id)
+	balance, err := h.services.Operations.GetUserBalanceById(userId)
 	if err != nil {
 		newErrorResponce(c, http.StatusInternalServerError, err.Error())
 		return
