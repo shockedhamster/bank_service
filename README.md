@@ -1,4 +1,4 @@
-# bank_service
+# Сервис банковских операций
 Регистрация
 POST   /auth/sign-up
 ```curl --location --request POST 'http://localhost:8080/auth/sign-up' \
