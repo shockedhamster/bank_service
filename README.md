@@ -1,5 +1,6 @@
 # Сервис банковских операций
 Регистрация
+
 POST   /auth/sign-up
 ```curl --location --request POST 'http://localhost:8080/auth/sign-up' \
 --header 'Content-Type: application/json' \
@@ -15,6 +16,7 @@ POST   /auth/sign-up
 }
 ```
 Аутентификация
+
 POST   /auth/sign-in
 ```
 curl --location --request POST 'http://localhost:8080/auth/sign-in' \
@@ -31,6 +33,7 @@ curl --location --request POST 'http://localhost:8080/auth/sign-in' \
 }
 ```
 Сделать депозит
+
 POST   /account/deposit
 ```
 curl --location 'localhost:8080/account/deposit' --header 'Content-Type: application/json' --header 'Authorization: ••••••' --data '{
@@ -45,6 +48,7 @@ curl --location 'localhost:8080/account/deposit' --header 'Content-Type: applica
 }
 ```
 Вывод средств
+
 POST   /account/withdraw
 ```
 curl --location 'localhost:8080/account/withdraw' --header 'Content-Type: application/json' --header 'Authorization: ••••••' --data '{
@@ -59,6 +63,7 @@ curl --location 'localhost:8080/account/withdraw' --header 'Content-Type: applic
 }
 ```
 Перевод средств
+
 POST   /account/transfer
 ```
 curl --location 'localhost:8080/account/transfer' --header 'Content-Type: application/json' --data '{
@@ -74,6 +79,7 @@ curl --location 'localhost:8080/account/transfer' --header 'Content-Type: applic
 }
 ```
 Баланс пользователя
+
 GET    /operations/user-balance/:currency
 ```
 curl --location 'localhost:8080/operations/user-balance/USD' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjkzMTEwMjUsImlhdCI6MTcyOTI2NzgyNSwidXNlcl9pZCI6MX0.MxUvy0xQzPqtCUNQR2B7zBE3KS5JZrWd-nNSFExpbVM' --data ''
@@ -86,6 +92,7 @@ curl --location 'localhost:8080/operations/user-balance/USD' --header 'Authoriza
 }
 ```
 История транзакций
+
 GET    /operations/transaction-history
 ```
 curl --location --request GET 'localhost:8080/operations/transaction-history' --header 'Content-Type: application/json' --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjkzMTEwMjUsImlhdCI6MTcyOTI2NzgyNSwidXNlcl9pZCI6MX0.MxUvy0xQzPqtCUNQR2B7zBE3KS5JZrWd-nNSFExpbVM' --data '{
