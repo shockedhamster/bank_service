@@ -1,6 +1,6 @@
 build:
 	docker-compose build
-.PHONY: build:
+.PHONY: build
 
 compose-up:
 	docker-compose up

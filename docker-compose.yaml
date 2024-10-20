@@ -3,11 +3,13 @@ version: "3"
 services:
   bank_service:
     build: ./
-    command: ["/usr/local/bin/wait-for-it", "db:5432", "--", "./bank_service"]
+    #command: ["/usr/local/bin/wait-for-it", "db:5432", "--", "./bank_service"]
+    command: ["/usr/local/bin/wait-for-it", "kafka:9092", "--", "/usr/local/bin/wait-for-it", "db:5432", "--", "./bank_service"]
     ports:
       - "8080:8080"
     depends_on:
       - db
+      - kafka
     environment:
       - DB_PASSWORD=admin
     networks:
@@ -40,6 +42,29 @@ services:
       - ./migrations:/migrations
     depends_on:
       - db
+    networks:
+      - test_network
+  
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092 # Указывает на слушатели
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_BROKER_ID=1
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+    networks:
+      - test_network
+    ports:
+      - "9092:9092"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
     networks:
       - test_network
 

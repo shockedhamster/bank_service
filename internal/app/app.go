@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/bank_service/internal/handler"
+	"github.com/bank_service/internal/kafka"
 	"github.com/bank_service/internal/repository"
 	"github.com/bank_service/internal/service"
 	"github.com/joho/godotenv"
@@ -43,6 +44,11 @@ func RunApp() {
 	repository := repository.NewRepository(db)
 	services := service.NewService(repository)
 	handlers := handler.NewHandler(services)
+
+	kafkaURL := "kafka:9092"
+	topic := "user-created"
+
+	go kafka.ConsumeMessages(kafkaURL, topic, services)
 
 	// init server
 	server := new(Server)

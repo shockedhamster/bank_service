@@ -28,3 +28,8 @@ CREATE TABLE operations
     foreign key (account_id) references accounts (id),
     foreign key (operation_type) references operation_type (id)
 );
+
+INSERT INTO operation_type (type_name) VALUES ('deposit');
+INSERT INTO operation_type (type_name) VALUES ('withdraw');
+INSERT INTO operation_type (type_name) VALUES ('transfer_from');
+INSERT INTO operation_type (type_name) VALUES ('transfer_to');
