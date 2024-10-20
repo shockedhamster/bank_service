@@ -26,6 +26,7 @@ type Authorization interface {
 }
 
 type Account interface {
+	CreateAccount(id int) error
 	Deposit(id, amount int) error
 	Withdraw(id, amount int) error
 	Transfer(idFrom, idTo, amount int) error

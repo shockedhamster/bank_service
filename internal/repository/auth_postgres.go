@@ -33,6 +33,7 @@ func (r *AuthPostgres) CreateUser(user entities.User) (int, error) {
 		return 0, err
 	}
 
+	// Убрать добавление в таблицу accounts
 	createAccountQuery := fmt.Sprintf("INSERT INTO %s (id, balance) values ($1, 0)", accoutsTable)
 	_, err = r.db.Exec(createAccountQuery, id)
 	if err != nil {

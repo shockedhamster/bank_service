@@ -15,6 +15,15 @@ func NewAccountService(repo repository.Account) *AccoutsService {
 	}
 }
 
+func (s *AccoutsService) CreateAccount(id int) error {
+	err := s.repo.CreateAccount(id)
+	if err != nil {
+		logrus.Errorf("Error creating accout: %s", err.Error())
+		return err
+	}
+	return nil
+}
+
 func (s *AccoutsService) Deposit(id, amount int) error {
 	err := s.repo.Deposit(id, amount)
 	if err != nil {

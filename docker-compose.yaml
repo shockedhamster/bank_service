@@ -1,0 +1,52 @@
+version: "3"
+
+services:
+  bank_service:
+    build: ./
+    command: ["/usr/local/bin/wait-for-it", "db:5432", "--", "./bank_service"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_PASSWORD=admin
+    networks:
+      - test_network
+
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=db_1
+      - POSTGRES_PASSWORD=admin
+      
+    networks:
+      - test_network
+    ports:
+      - "5432:5432"
+      
+  migrate:
+    image: migrate/migrate
+    restart: on-failure:3
+    command: [
+      "/usr/local/bin/wait-for-it", "db:5432", "--",
+      "-path", "/migrations",
+      "-database", "postgres://postgres:admin@db:5432/db_1?sslmode=disable",
+      "up"
+    ]
+    volumes:
+      - ./migrations:/migrations
+    depends_on:
+      - db
+    networks:
+      - test_network
+
+networks:
+  test_network:
+    driver: bridge
+
+volumes:
+  database:
+  

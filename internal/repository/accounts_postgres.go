@@ -15,6 +15,17 @@ func NewAccountsPostgres(db *sqlx.DB) *AccountsPotgres {
 	return &AccountsPotgres{db: db}
 }
 
+func (r *AccountsPotgres) CreateAccount(id int) error {
+	createAccountQuery := fmt.Sprintf("INSERT INTO %s (id, balance) values ($1, 0)", accoutsTable)
+	_, err := r.db.Exec(createAccountQuery, id)
+	if err != nil {
+		logrus.Errorf("Error creating an account: %s", err.Error())
+		return err
+
+	}
+	return nil
+}
+
 func (r *AccountsPotgres) Deposit(id, amount int) error {
 	tx, err := r.db.Begin()
 	if err != nil {
