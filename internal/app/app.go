@@ -5,6 +5,7 @@ import (
 
 	"github.com/bank_service/internal/handler"
 	"github.com/bank_service/internal/kafka"
+	kafka_consumer "github.com/bank_service/internal/kafka/consumer"
 	"github.com/bank_service/internal/repository"
 	"github.com/bank_service/internal/service"
 	"github.com/joho/godotenv"
@@ -41,14 +42,19 @@ func RunApp() {
 		logrus.Fatal("failed to init DB: ", err.Error())
 	}
 
+	kafkaCfg := kafka.KafkaConfig{
+		KafkaURL:  viper.GetString("kafka.kafkaUrl"),
+		Topic:     viper.GetString("kafka.topic"),
+		GroupName: viper.GetString("kafka.groupName"),
+	}
+
+	producer := kafka.NewKafkaProducer(kafkaCfg)
+
 	repository := repository.NewRepository(db)
-	services := service.NewService(repository)
+	services := service.NewService(repository, producer)
 	handlers := handler.NewHandler(services)
 
-	kafkaURL := "kafka:9092"
-	topic := "user-created"
-
-	go kafka.ConsumeMessages(kafkaURL, topic, services)
+	go kafka_consumer.ConsumeMessages(kafkaCfg.KafkaURL, kafkaCfg.Topic, services)
 
 	// init server
 	server := new(Server)

@@ -5,42 +5,29 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// func NewKafkaWriter(kafkaURL, topic string) *kafka.Writer {
-// 	return kafka.NewWriter(kafka.WriterConfig{
-// 		Brokers:  []string{kafkaURL},
-// 		Topic:    topic,
-// 		Balancer: &kafka.LeastBytes{},
-// 	})
-// }
+type KafkaProducer interface {
+	SendMessage(topic string, message []byte) error
+	Close() error
+}
 
-// func ProduceMessage(writer *kafka.Writer, key, value string) error {
-// 	logrus.Infof("Data from ProduceMessage: USER_ID: %s, USERNAME: %s", key, value)
-// 	err := writer.WriteMessages(context.Background(),
-// 		kafka.Message{
-// 			Key:   []byte(key),
-// 			Value: []byte(value),
-// 		},
-// 	)
-// 	if err != nil {
-// 		logrus.Printf("could not write message: %v", err)
-// 		return err
-// 	}
-// 	logrus.Println("message written successfully")
-// 	return nil
-// }
+type Producer struct {
+	producer sarama.SyncProducer
+}
 
-func NewKafkaProducer(kafkaURL string) (sarama.SyncProducer, error) {
+func NewKafkaProducer(cfg KafkaConfig) Producer {
 	config := sarama.NewConfig()
 	config.Producer.Return.Successes = true
 
-	producer, err := sarama.NewSyncProducer([]string{kafkaURL}, config)
+	producer, err := sarama.NewSyncProducer([]string{cfg.KafkaURL}, config)
 	if err != nil {
-		return nil, err
+		return Producer{}
 	}
-	return producer, nil
+	return Producer{
+		producer: producer,
+	}
 }
 
-func ProduceMessage(producer sarama.SyncProducer, topic, key, value string) error {
+func (p *Producer) ProduceMessage(topic, key, value string) error {
 	logrus.Infof("Data from ProduceMessage: USER_ID: %s, USERNAME: %s", key, value)
 
 	message := &sarama.ProducerMessage{
@@ -51,7 +38,7 @@ func ProduceMessage(producer sarama.SyncProducer, topic, key, value string) erro
 
 	logrus.Infof("Data from ProduceMessage: USER_ID: %s, USERNAME: %s", key, value)
 
-	partition, offset, err := producer.SendMessage(message)
+	partition, offset, err := p.producer.SendMessage(message)
 	if err != nil {
 		logrus.Printf("could not write message: %v", err)
 		return err
@@ -59,4 +46,8 @@ func ProduceMessage(producer sarama.SyncProducer, topic, key, value string) erro
 
 	logrus.Printf("message written successfully to partition %d at offset %d", partition, offset)
 	return nil
+}
+
+func (p *Producer) Close() error {
+	return p.producer.Close()
 }

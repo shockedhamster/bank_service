@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"github.com/bank_service/internal/entities"
+	"github.com/bank_service/internal/kafka"
 	"github.com/bank_service/internal/repository"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -23,13 +25,26 @@ type tokenClaims struct {
 }
 
 type AuthService struct {
-	repo repository.Authorization
+	repo     repository.Authorization
+	producer kafka.Producer
 }
 
-func NewAuthService(repo repository.Authorization) *AuthService {
+func NewAuthService(repo repository.Authorization, producer kafka.Producer) *AuthService {
 	return &AuthService{
-		repo: repo,
+		repo:     repo,
+		producer: producer,
 	}
+}
+
+func (s *AuthService) SendMessage(topic string, key, message string) error {
+
+	err := s.producer.ProduceMessage(topic, key, message)
+	if err != nil {
+		logrus.Errorf("Error sending message: %s", err.Error())
+		return err
+	}
+	return nil
+
 }
 
 func (s *AuthService) CreateUser(user entities.User) (int, error) {

@@ -5,4 +5,9 @@ db:
   dbName:   "db_1"
   sslmode:  "disable"
 
+kafka:
+  kafkaUrl: "kafka:9092"
+  topic: "user-created"
+  groupName: "bank_service_group"
+
 addr: "localhost:8080"
